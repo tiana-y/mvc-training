@@ -21,15 +21,31 @@ namespace Bulky.DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
+            // e.g. "Category,CoverType"
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var property in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(property);
+                }
+            }
             return query.ToList();
         }
 
-        public T GetFirstOfDefault(Expression<Func<T, bool>> filter)
+        public T GetFirstOfDefault(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
+            // e.g. "Category,CoverType"
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach(var property in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(property);
+                }
+            }
             query = query.Where(filter);
             return query.FirstOrDefault();
         }

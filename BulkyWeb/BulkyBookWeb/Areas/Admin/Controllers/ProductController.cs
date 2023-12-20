@@ -21,14 +21,14 @@ public class ProductController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        var list = _unitOfWork.Product.GetAll();
+        var list = _unitOfWork.Product.GetAll(includeProperties:"Category").ToList();
         return View(list);
     }
 
     [HttpGet]
     public IActionResult Upsert(int? id)
     {
-        IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll()
+        IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll(includeProperties: "Category")
             .Select(c => new SelectListItem
             {
                 Value = c.Id.ToString(),
