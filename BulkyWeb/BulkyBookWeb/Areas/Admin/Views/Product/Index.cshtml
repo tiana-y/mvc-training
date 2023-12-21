@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <table class="table table-bordered">
+    <table id="productTable" class="table table-bordered table-secondary">
         <thead>
             <tr class="table-light">
                 <th>Title</th>
@@ -23,27 +23,8 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr class="table-secondary">
-                    <td>@item.Title</td>
-                    <td>@item.ISBN</td>
-                    <td>@item.Author</td>
-                    <td>@item.Price</td>
-                    <td>@item.Category?.Name</td>
-                    <td>
-                        <div class="w-75 btn-group" role="group">
-                            <a asp-controller="Product" asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-primary">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
-                                <i class="bi bi-trash3"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
     </table>
 </div>
+@section Scripts {
+   <script src="~/js/product.js"></script>
+}

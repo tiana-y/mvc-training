@@ -28,7 +28,7 @@ public class ProductController : Controller
     [HttpGet]
     public IActionResult Upsert(int? id)
     {
-        IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll(includeProperties: "Category")
+        IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll()
             .Select(c => new SelectListItem
             {
                 Value = c.Id.ToString(),
@@ -95,27 +95,43 @@ public class ProductController : Controller
         return View(productVm);
     }
 
-    [HttpGet]
+    [HttpDelete]
     public IActionResult Delete(int? id)
     {
-        if (id is null || id == 0)
-        {
-            return NotFound();
-        }
         var item = _unitOfWork.Product.GetFirstOfDefault(x => x.Id == id);
         if (item is null)
         {
-            return NotFound();
+            return Json(new
+            {
+                success = false,
+                message = "Error while deleting"
+            });
         }
-        return View(item);
-    }
-
-    [HttpPost, ActionName("Delete")]
-    public IActionResult DeletePOST(Product item)
-    {
+        if (item.ImageUrl is not null)
+        {
+            var oldImagePath = Path.Combine(_webHostEnv.WebRootPath, item.ImageUrl.TrimStart('\\'));
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+        }
         _unitOfWork.Product.Remove(item);
         _unitOfWork.SaveChanges();
-        TempData["success"] = "Product deleted successfully";
-        return RedirectToAction("Index");
+        return Json(new
+        {
+            success = true,
+            message = "Delete Successful"
+        });
     }
+
+    #region API Calls
+    public IActionResult GetAll()
+    {
+        var list = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+        return Json(new
+        {
+            data = list
+        });
+    }
+    #endregion
 }
